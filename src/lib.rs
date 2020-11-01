@@ -1,4 +1,11 @@
-use std::io::Write;
+use std::sync::Mutex;
+
+#[macro_use]
+extern crate lazy_static;
+
+lazy_static! {
+    static ref TEXT: Mutex<String> = Mutex::new(String::new());
+}
 
 pub struct Tqdm;
 
@@ -12,11 +19,18 @@ impl Tqdm {
     }
 }
 
-pub fn writeln(text: &str) {
-    std::thread::sleep(std::time::Duration::from_secs(1));
-    let size = terminal_size::terminal_size().expect("Failed to get terminal dimensions.");
-    let whitespace = " ".repeat((size.0.0 as usize).checked_sub(text.len()).unwrap_or(0));
-    println!("\r{}{}", text, whitespace);
+pub fn write(text: &str) {
+    let mut msg = TEXT.lock().unwrap();
+    *msg = String::from(text);
+}
+
+fn clear_previous_line() {
+    print!("\x1b[1A");
+    print!("\r");
+    let size = terminal_size::terminal_size().expect("Unable to get terminal size.");
+    let width = size.0.0 as usize;
+    print!("{}", " ".repeat(width));
+    print!("\r");
 }
 
 trait WriteCon {
@@ -36,10 +50,25 @@ trait WriteCon {
 
     fn display(&self) {
         let bar = self.create_bar();
-        let size = terminal_size::terminal_size().expect("Failed to get terminal dimensions.");
-        let whitespace = " ".repeat(size.0.0 as usize);
-        print!("\r{}\r{}", whitespace, bar);
-        std::io::stdout().flush().ok();
+        let mut text = TEXT.lock().unwrap();
+
+        if self.get_current_amount() != 0 {
+            let lines = text.matches("\n").count();
+            for _ in 1..=lines {
+                clear_previous_line();
+            }
+            clear_previous_line();
+            clear_previous_line();
+        }
+
+        if !text.is_empty() {
+            println!("{}", text);
+            *text = String::new();
+        } else {
+            println!("");
+        }
+
+        println!("{}", bar);
     }
 }
 
@@ -52,13 +81,10 @@ pub struct TqdmAuto<I: Iterator> {
 impl<I: Iterator> Iterator for TqdmAuto<I> {
     type Item = ();
     fn next(&mut self) -> Option<Self::Item> {
-        if self.current == 0 {
-            self.display();
-        };
         let next = self.iter.next();
         if next.is_some() {
-            self.current += 1;
             self.display();
+            self.current += 1;
             Some(())
         } else {
             self.display();

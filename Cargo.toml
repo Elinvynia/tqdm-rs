@@ -13,3 +13,4 @@ edition = "2018"
 
 [dependencies]
 terminal_size = "0.1.13"
+lazy_static = "1.4"
