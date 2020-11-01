@@ -1,0 +1,15 @@
+[package]
+name = "tqdm-rs"
+description = "A simple progress bar library inspired by Python's tqdm."
+documentation = "https://docs.rs/tqdm-rs"
+homepage = "https://github.com/Elinvynia/tqdm-rs"
+repository = "https://github.com/Elinvynia/tqdm-rs.git"
+keywords = ["tqdm", "progress", "bar"]
+authors = ["Elinvynia <59487684+Elinvynia@users.noreply.github.com>"]
+readme = "README.md"
+license = "MIT/Apache-2.0"
+version = "0.0.1"
+edition = "2018"
+
+[dependencies]
+terminal_size = "0.1.13"
