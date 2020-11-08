@@ -45,7 +45,17 @@ trait WriteCon {
         let current = self.get_current_amount();
         let total = self.get_total_amount();
         let length = total.to_string().len();
-        format!("{:>3}% | progress bar | {:>length$}/{}", percents, current, total, length = length)
+        let mut bar = String::new();
+        bar += "[";
+        for x in 1..=20 {
+            if x * 5 <= percents {
+                bar += "#"
+            } else {
+                bar += " "
+            }
+        }
+        bar += "]";
+        format!("{:>3}% {} {:>length$}/{}", percents, bar, current, total, length = length)
     }
 
     fn display(&self) {
@@ -78,14 +88,15 @@ pub struct TqdmAuto<I: Iterator> {
     total: usize,
 }
 
-impl<I: Iterator> Iterator for TqdmAuto<I> {
-    type Item = ();
+impl<I: Iterator> Iterator for TqdmAuto<I>
+{
+    type Item = I::Item;
     fn next(&mut self) -> Option<Self::Item> {
         let next = self.iter.next();
         if next.is_some() {
             self.display();
             self.current += 1;
-            Some(())
+            next
         } else {
             self.display();
             None
