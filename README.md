@@ -6,25 +6,23 @@ A simple progress bar library inspired by Python's `tqdm`.
 
 ## Sample Usage
 ```rust
-fn main() {
-    for _ in tqdm_rs::Tqdm::new(0..10) {
-        tqdm_rs::write("Doing some work...\nOn multiple lines!");
-        std::thread::sleep(std::time::Duration::from_secs(1));
-        continue
-    }
+for _ in tqdm_rs::Tqdm::new(0..10) {
+    tqdm_rs::write("Doing some work...\nOn multiple lines!");
+    std::thread::sleep(std::time::Duration::from_millis(100));
+    continue
+}
 
-    // It is possible to use print, but it looks more clumsy!
-    for _ in tqdm_rs::Tqdm::new(0..10) {
-        println!("Doing some work...\nOn multiple lines!");
-        std::thread::sleep(std::time::Duration::from_secs(1));
-        continue
-    }
+// It is possible to use print, but it looks more clumsy!
+for _ in tqdm_rs::Tqdm::new(0..10) {
+    println!("Doing some work...\nOn multiple lines!");
+    std::thread::sleep(std::time::Duration::from_millis(100));
+    continue
+}
 
-    let mut tq = tqdm_rs::Tqdm::manual(100)
-    for _ in 0..10 {
-        println!("I am updated manually!")
-        tq.update(10)
-    }
+let mut tq = tqdm_rs::Tqdm::manual(100);
+for _ in 0..10 {
+    println!("I am updated manually!");
+    tq.update(10);
 }
 ```
 

@@ -5,21 +5,21 @@
 //! ```rust
 //! for _ in tqdm_rs::Tqdm::new(0..10) {
 //!     tqdm_rs::write("Doing some work...\nOn multiple lines!");
-//!     std::thread::sleep(std::time::Duration::from_secs(1));
+//!     std::thread::sleep(std::time::Duration::from_millis(100));
 //!     continue
 //! }
 //!
 //! // It is possible to use print, but it looks more clumsy!
 //! for _ in tqdm_rs::Tqdm::new(0..10) {
 //!     println!("Doing some work...\nOn multiple lines!");
-//!     std::thread::sleep(std::time::Duration::from_secs(1));
+//!     std::thread::sleep(std::time::Duration::from_millis(100));
 //!     continue
 //! }
 //!
-//! let mut tq = tqdm_rs::Tqdm::manual(100)
+//! let mut tq = tqdm_rs::Tqdm::manual(100);
 //! for _ in 0..10 {
-//!     println!("I am updated manually!")
-//!     tq.update(10)
+//!     println!("I am updated manually!");
+//!     tq.update(10);
 //! }
 //! ```
 //!
@@ -75,7 +75,8 @@ pub fn write(text: &str) {
 fn clear_previous_line() {
     print!("\x1b[1A");
     print!("\r");
-    let size = terminal_size::terminal_size().expect("Unable to get terminal size.");
+    let size = terminal_size::terminal_size()
+        .unwrap_or((terminal_size::Width(120), terminal_size::Height(120)));
     let width = size.0 .0 as usize;
     print!("{}", " ".repeat(width));
     print!("\r");
@@ -179,7 +180,7 @@ impl<I: Iterator> WriteCon for TqdmAuto<I> {
         self.total
     }
 }
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 /// If you want to manually update the progress, use this struct.
 pub struct TqdmManual {
     current: usize,
