@@ -43,13 +43,13 @@ lazy_static! {
     static ref TEXT: Mutex<String> = Mutex::new(String::new());
 }
 
-#[derive(Debug)]
 /// Empty struct used for creating one of the two tqdm types.
+#[derive(Debug)]
 pub struct Tqdm;
 
 impl Tqdm {
-    #[allow(clippy::new_ret_no_self)]
     /// Creates a new `tqdm` instance which handles progress automatically.
+    #[allow(clippy::new_ret_no_self)]
     pub fn new<I: Iterator>(iter: I) -> TqdmAuto<I> {
         let total = iter.size_hint().0;
         TqdmAuto {
@@ -86,19 +86,23 @@ trait WriteCon {
     fn get_current_amount(&self) -> usize {
         0
     }
+
     fn get_total_amount(&self) -> usize {
         0
     }
+
     fn get_percentage(&self) -> usize {
         let fraction = self.get_current_amount() as f32 / self.get_total_amount() as f32;
-        (fraction * 100f32).round() as usize
+        (fraction * 100.0).round() as usize
     }
+
     fn create_bar(&self) -> String {
         let percents = self.get_percentage();
         let current = self.get_current_amount();
         let total = self.get_total_amount();
         let length = total.to_string().len();
         let mut bar = String::new();
+
         bar += "[";
         for x in 1..=20 {
             if x * 5 <= percents {
@@ -108,6 +112,7 @@ trait WriteCon {
             }
         }
         bar += "]";
+
         format!(
             "{:>3}% {} {:>length$}/{}",
             percents,
@@ -149,8 +154,8 @@ trait WriteCon {
     }
 }
 
-#[derive(Debug)]
 /// Struct that handles progress automatically.
+#[derive(Debug)]
 pub struct TqdmAuto<I: Iterator> {
     iter: I,
     current: usize,
@@ -161,6 +166,8 @@ impl<I: Iterator> Iterator for TqdmAuto<I> {
     type Item = I::Item;
     fn next(&mut self) -> Option<Self::Item> {
         let next = self.iter.next();
+
+        #[allow(clippy::branches_sharing_code)]
         if next.is_some() {
             self.display();
             self.current += 1;
@@ -180,8 +187,9 @@ impl<I: Iterator> WriteCon for TqdmAuto<I> {
         self.total
     }
 }
-#[derive(Debug, Copy, Clone)]
+
 /// If you want to manually update the progress, use this struct.
+#[derive(Debug, Copy, Clone)]
 pub struct TqdmManual {
     current: usize,
     total: usize,
@@ -199,6 +207,7 @@ impl WriteCon for TqdmManual {
     fn get_current_amount(&self) -> usize {
         self.current
     }
+
     fn get_total_amount(&self) -> usize {
         self.total
     }
