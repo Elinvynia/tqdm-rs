@@ -1,4 +1,4 @@
-[![ci-badge][]][ci] [![docs-badge][]][docs] [![crate-version]][crate-link]
+[![ci-badge]][ci] [![docs-badge]][docs] [![crate-version]][crate-link]
 
 # tqdm-rs
 

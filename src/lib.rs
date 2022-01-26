@@ -188,7 +188,7 @@ impl<I: Iterator> WriteCon for TqdmAuto<I> {
     }
 }
 
-/// If you want to manually update the progress, use this struct.
+/// For manually updating the progress.
 #[derive(Debug, Copy, Clone)]
 pub struct TqdmManual {
     current: usize,
